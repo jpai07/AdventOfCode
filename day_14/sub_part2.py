@@ -1,40 +1,69 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import tqdm
+maze = [list(line) for line in open("input.txt").read().split("\n")]
+replacements = 1
 
-def find_reflexion(maze : list, row: bool):
-    if row:
-        reflexion_row_id = False
-        for i in range(1,maze.shape[0]):
-            w = min(i,maze.shape[0]-i)
-            # Check if exactly one good element must be changed :
-            if np.sum(maze[i-w:i,:] != np.flipud(maze[i:i+w,:])) == 1:
-                reflexion_row_id = i
-        return reflexion_row_id
-    else :
-        reflexion_col_id = False
-        for j in range(1,maze.shape[1]):
-            w = min(j,maze.shape[1]-j)
-            if np.sum(maze[:,j-w:j] != np.fliplr(maze[:,j:j+w])) == 1:
-                reflexion_col_id = j
-        return reflexion_col_id
+def cycle(maze):
+    # NORTH 
+    replacements = 1
+    while replacements > 0:
+        replacements = 0
+        for j in range(len(maze[0])):
+            for i in range(1,len(maze)):
+                if maze[i-1][j] == "." and maze[i][j] == "O":
+                    maze[i-1][j] = "O"
+                    maze[i][j] = "."
+                    replacements += 1
 
-with open("input.txt") as file:
-    mazes = []
-    maze = []
-    for line in file.readlines():
-        if line.__contains__("#") or line.__contains__("."):
-            maze.append([e for e in line.replace("\n","")])
-        else:
-            mazes.append(np.array(maze))
-            maze = []
-    if maze:
-        mazes.append(np.array(maze))
+    # WEST
+    replacements = 1
+    while replacements > 0:
+        replacements = 0
+        for j in range(1,len(maze[0])):
+            for i in range(len(maze)):
+                if maze[i][j-1] == "." and maze[i][j] == "O":
+                    maze[i][j-1] = "O"
+                    maze[i][j] = "."
+                    replacements += 1
 
-ans = 0
-for maze in mazes:
-    for row in [True,False]:
-        coeff = 100 if row else 1
-        index = find_reflexion(maze, row)
-        if index:
-            ans += coeff * index
+    # SOUTH
+    replacements = 1
+    while replacements > 0:
+        replacements = 0
+        for j in range(len(maze[0])):
+            for i in range(len(maze)-1):
+                if maze[i+1][j] == "." and maze[i][j] == "O":
+                    maze[i+1][j] = "O"
+                    maze[i][j] = "."
+                    replacements += 1
+    
+    # EAST
+    replacements = 1
+    while replacements > 0:
+        replacements = 0
+        for j in range(len(maze[0])-1):
+            for i in range(len(maze)):
+                if maze[i][j+1] == "." and maze[i][j] == "O":
+                    maze[i][j+1] = "O"
+                    maze[i][j] = "."
+                    replacements += 1
+    return maze
 
+NUM_CYCLES = 200
+LOADS = []
+for k in tqdm.tqdm(range(1,NUM_CYCLES+1)):
+    maze = cycle(maze)
+    #print(f"After {k} cycle : \n {np.array(maze)}")
+    
+    ans = 0
+    for i,row in enumerate(maze):
+        num_rocks = sum([element == "O" for element in row])
+        ans += num_rocks * (len(maze)-i)
+    
+    LOADS.append(ans)
+
+print(LOADS[-50:])
+plt.plot(LOADS[-50:])
+plt.show()
 print(ans)
