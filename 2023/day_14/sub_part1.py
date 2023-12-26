@@ -1,4 +1,3 @@
-import numpy as np
 maze = [list(line) for line in open("input.txt").read().split("\n")]
 replacements = 1
 

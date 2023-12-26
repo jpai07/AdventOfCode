@@ -1,5 +1,4 @@
 import re
-from tqdm import tqdm
 
 with open("input.txt") as file:
     count_map = 0

@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
 maze = [list(line) for line in open("input.txt").read().split("\n")]
