@@ -6,13 +6,17 @@ class Solution:
   
   def __init__(self, test=False):
     self.file = open(self.filename_test_input,'r').read() if test else open(self.filename_real_input,'r').read()
-    self.lines = self.file.splitlines()
+    self.line = self.file.splitlines()[0]
     
   def part1(self):
-    pass
+    for i in range(4,len(self.line)):
+      if len(set(self.line[i-4:i])) == 4:
+        return i
   
   def part2(self):
-    pass
+    for i in range(14,len(self.line)):
+      if len(set(self.line[i-14:i])) == 14:
+        return i
   
 if __name__ == '__main__':
   parser = argparse.ArgumentParser('Solution file')
