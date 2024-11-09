@@ -4,51 +4,31 @@ class Solution:
   filename_real_input = 'real_input.txt'
   filename_test_input = 'test_input.txt'
   
-  def __init__(self, test=False):
+  def __init__(self, test=False, part=1):
     self.file = open(self.filename_test_input,'r').read() if test else open(self.filename_real_input,'r').read()
     self.lines = self.file.splitlines()
-    self.visited = set()
-    self.visited.add((0,0))
-    self.head_coords = (0,0)
-    self.tail_coords = (0,0)
-    self.directions_deltas = {'L':(0,-1),'R':(0,1),'U':(-1,0),'D':(1,0)}
-    
+    self.rope = [0] * 10
+    self.visited = [set([x]) for x in self.rope]
+    self.directions = {'L':+1, 'R':-1, 'D':1j, 'U':-1j}
+    self.sign = lambda x: complex((x.real>0) - (x.real<0), (x.imag>0) - (x.imag<0))
+    self.rope_length = 1 if part == 1 else 10
+
     for line in self.lines:
       direction, steps = line.split(' ')
-      steps = int(steps)
-      for _ in range(steps):
-        last_head_position = self.head_coords
-        self.head_coords = tuple(map(lambda c1,c2: c1+c2, self.head_coords, self.directions_deltas[direction]))
-        print(self.head_coords)
-        print(self.tail_coords)
-        print('')
-        if abs(self.head_coords[0]-self.tail_coords[0])>=2 or abs(self.head_coords[1]-self.tail_coords[1]) >=2:
-          self.tail_coords = last_head_position
-          self.visited.add(self.tail_coords)
+      for _ in range(int(steps)):
+        self.rope[0] += self.directions[direction]
 
-    print(self.visited)
-    
-  def display(self):
-    xs = [c[0] for c in list(self.visited)]
-    ys = [c[1] for c in list(self.visited)]
-    min_x, max_x = min(xs), max(xs)
-    min_y, max_y = min(ys), max(ys)
-    for x in range(min_x, max_x+1):
-      line = ''
-      for y in range(min_y, max_y+1):
-        if (x,y) in self.visited:
-          line += '#'
-          continue
-        line += '.'
-      print(line)
-      print('\n')
+        for n in range(1, self.rope_length):
+            dist = self.rope[n-1] - self.rope[n]
+            if abs(dist) >= 2:
+                self.rope[n] += self.sign(dist)
+                self.visited[n].add(self.rope[n])
         
   def part1(self):
-    self.display()
-    return len(self.visited)
+    return len(self.visited[-1])
   
   def part2(self):
-    pass
+    return len(self.visited[-1])
   
 if __name__ == '__main__':
   parser = argparse.ArgumentParser('Solution file')
@@ -56,6 +36,6 @@ if __name__ == '__main__':
   parser.add_argument('-test', required=True, type=str, help='Test mode (True/False)')
   args = parser.parse_args()
   test = True if args.test in ['True','true'] else False
-  solution = Solution(test=test)
+  solution = Solution(test=test, part=args.part)
   result = solution.part1() if args.part == 1 else solution.part2()
   print(f'Result for Part=={args.part} & Test=={test} : {result}')
