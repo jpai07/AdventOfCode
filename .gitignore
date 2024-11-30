@@ -1,6 +1,10 @@
 # session cache for collect of input
 .session_cache.lock
 
+# real_input.txt (must not be shared)
+input.txt
+real_input.txt
+
 # Byte-compiled / optimized / DLL files
 config.yml
 .DS_Store
