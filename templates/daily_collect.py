@@ -35,7 +35,8 @@ os.makedirs(dest)
 url = 'https://adventofcode.com'
 line_size = 120
 day_url = f'{url}/{args.y}/day/{args.d}'
-response = requests.get(day_url)
+headers = {'User-Agent': 'https://github.com/henriupton99/AdventOfCode by henriupton99@gmail.com'}
+response = requests.get(day_url, headers=headers)
 soup = BeautifulSoup(response.text, features="html.parser")
 instructions = soup.find('article',attrs={'class':'day-desc'})
 
