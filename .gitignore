@@ -1,3 +1,6 @@
+# session cache for collect of input
+.session_cache.lock
+
 # Byte-compiled / optimized / DLL files
 config.yml
 .DS_Store
